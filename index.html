@@ -19,6 +19,7 @@ main {
 	border-radius:30px;
 	margin-top:50px;
 	z-index:10;
+	background-color:#FFF;
 }
 
 h1 {
@@ -39,7 +40,7 @@ p {
 
 canvas {
 	z-index:0;
-	opacity:0.1;
+	opacity:0.3;
 	position:fixed;
 	top:0;
 	left:0;
@@ -57,7 +58,6 @@ canvas {
 </main>
 </body>
 <script>
-
 
 // resize canvas
 function resize() {
@@ -77,43 +77,56 @@ function mousedraw(e) {
 	  setPosition(e);
 	  return;
 	}
-	ctx.beginPath(); // begin
+	//drawDot(pos.x, pos.y,10);
+	drawDot(pos.x, pos.y,10,255,0,255);
+	ctx.lineWidth = 15;
+	ctx.lineCap = 'round';
+	ctx.strokeStyle = '#88AAFF';
+	ctx.beginPath();
 	ctx.moveTo(pos.x, pos.y); // from
 	setPosition(e);
 	ctx.lineTo(pos.x, pos.y); // to
 	ctx.stroke();
 }
 
-// touch draw can call mouse draw
+ function drawDot(x,y,size,r,g,b) {
+        // Let's use black by setting RGB values to 0, and 255 alpha (completely opaque)
+        //r=0; g=0; b=0; a=255;
+		a=255;
+        // Select a fill style
+        ctx.fillStyle = "rgba("+r+","+g+","+b+","+(a/255)+")";
+        // Draw a filled circle
+        ctx.beginPath();
+        ctx.arc(x, y, size, 0, Math.PI*2, true);
+        ctx.closePath();
+        ctx.fill();
+    }
+
 function touchdraw(e) {
-	for(var touch of e.touches) {
-		mousedraw({
-			clientX: touch.clientX,
-			clientY: touch.clientY
-		});
-	};
+	ctx.strokeStyle = '#88AAFF';
+	ctx.lineWidth = 15;
+	ctx.lineCap = 'round';
+	ctx.beginPath();
+	
+	ctx.moveTo(pos.x, pos.y); // from
+	pos.x = e.touches[0].clientX;
+	pos.y = e.touches[0].clientY;
+	ctx.lineTo(pos.x, pos.y); // to
+
+	ctx.stroke();
+	drawDot(pos.x, pos.y,20,0,0,255);
 }
 
 var ctx, pos;
 function init() {
 	var canvas = document.createElement('canvas');
 	document.body.appendChild(canvas);
-
-	// get canvas 2D context and set him correct size
 	ctx = canvas.getContext('2d');
-
 	resize();
-
-	// last known position
 	pos = { x: 0, y: 0 };
-
-	window.addEventListener('resize', resize);
-	document.addEventListener('mousemove', mousedraw);
-	document.addEventListener('touchmove', touchdraw);
-
-	ctx.lineWidth = 15;
-	ctx.lineCap = 'round';
-	ctx.strokeStyle = '#88AAFF';//#c0392b';
+	window.addEventListener('resize', resize, false);
+	document.addEventListener('mousemove', mousedraw, false);
+	document.addEventListener('touchmove', touchdraw, false);
 }
 init();
 </script>
