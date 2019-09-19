@@ -9,15 +9,16 @@
 <link href="https://fonts.googleapis.com/css?family=Open+Sans|Rock+Salt&display=swap" rel="stylesheet">
 <style>
 main {
-  max-width:70ch;
-  padding:2ch;
-  margin:auto;
-  color:#333;
-  font-size:1.2em;
-  height:100%;
-  box-shadow: 0 0 5px #CCC;
-  border-radius:30px;
-  margin-top:50px;
+	max-width:70ch;
+	padding:2ch;
+	margin:auto;
+	color:#333;
+	font-size:1.2em;
+	height:100%;
+	box-shadow: 0 0 5px #CCC;
+	border-radius:30px;
+	margin-top:50px;
+	z-index:10;
 }
 
 h1 {
@@ -25,13 +26,24 @@ h1 {
 	margin:20px auto;
 	text-align:center;
 }
-p { font-family:'Open Sans', sans-serif;
-text-align:center;
+p { 
+	font-family:'Open Sans', sans-serif;
+	text-align:center;
+	margin-top:0;
+	margin-bottom:0;
 }
+
 .bb { 
-  font-size:50pt;
+	font-size:50pt;
 }
-p { margin-top:0;margin-bottom:0;}
+
+canvas {
+	z-index:0;
+	opacity:0.1;
+	position:fixed;
+	top:0;
+	left:0;
+}
 </style>
 
 <main>
@@ -40,8 +52,69 @@ p { margin-top:0;margin-bottom:0;}
 <h1>Not Just Bendy</h1>
 
 <p>Coming soon.</p>
+
+
 </main>
 </body>
 <script>
+
+
+// resize canvas
+function resize() {
+	ctx.canvas.width = window.innerWidth;
+	ctx.canvas.height = window.innerHeight;
+}
+
+// new position from mouse event
+function setPosition(e) {
+	pos.x = e.clientX;
+	pos.y = e.clientY;
+}
+
+// draw from current pos to e's pos
+function mousedraw(e) {
+	if (pos.x == 0 && pos.y == 0) {
+	  setPosition(e);
+	  return;
+	}
+	ctx.beginPath(); // begin
+	ctx.moveTo(pos.x, pos.y); // from
+	setPosition(e);
+	ctx.lineTo(pos.x, pos.y); // to
+	ctx.stroke();
+}
+
+// touch draw can call mouse draw
+function touchdraw(e) {
+	for(var touch of e.touches) {
+		mousedraw({
+			clientX: touch.clientX,
+			clientY: touch.clientY
+		});
+	};
+}
+
+var ctx, pos;
+function init() {
+	var canvas = document.createElement('canvas');
+	document.body.appendChild(canvas);
+
+	// get canvas 2D context and set him correct size
+	ctx = canvas.getContext('2d');
+
+	resize();
+
+	// last known position
+	pos = { x: 0, y: 0 };
+
+	window.addEventListener('resize', resize);
+	document.addEventListener('mousemove', mousedraw);
+	document.addEventListener('touchmove', touchdraw);
+
+	ctx.lineWidth = 15;
+	ctx.lineCap = 'round';
+	ctx.strokeStyle = '#88AAFF';//#c0392b';
+}
+init();
 </script>
 </html>
